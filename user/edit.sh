@@ -489,7 +489,7 @@ if [[ $ec == 12 ]];then
 			if [[ $newport -ge "65535" || $newport -le "1" ]];then
 				echo "端口范围取值[1,65535]"
 			else
-				checkport=$(netstat -anlt | awk '{print $4}' | sed -e '1,2d' | awk -F : '{print $NF}' | sort -n | uniq | grep "$newport")
+				checkport=$(netstat -anlt | awk '{print $4}' | sed -e '1,2d' | awk -F : '{print $NF}' | sort -n | uniq | grep "\<$newport\>")
 				if [[ -z ${checkport} ]];then
 					break
 				else

@@ -50,7 +50,7 @@ while :;do
 		if [[ $uport -ge "65535" || $uport -le 1 ]];then
 			echo "端口范围取值[1,65535]"
 		else
-			port=`netstat -anlt | awk '{print $4}' | sed -e '1,2d' | awk -F : '{print $NF}' | sort -n | uniq | grep "$uport"`
+			port=`netstat -anlt | awk '{print $4}' | sed -e '1,2d' | awk -F : '{print $NF}' | sort -n | uniq | grep "\<$uport\>"`
 			if [[ -z ${port} ]];then
                 for i in `echo -e "${banport}"`
                 do
