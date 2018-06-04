@@ -69,10 +69,119 @@ StopInstall(){
     rm -rf $0
     echo "清理完成!"
 }
+#收集日志
+MakLog(){
+    mkdir /tmp/AR_Log
+    cd /tmp/AR_Log
+    mkdir ./data
+    cd data
+    cp -R /usr/local/shadowsocksr ./
+    cp -R /usr/local/SSR-Bash-Python ./
+    cd ..
+    mkdir ./log
+    cd ./log
+    if [[ ${OS} == CentOS ]];then
+        cp /var/log/yum.log ./
+        cp /var/log/dmesg ./
+        cp /var/log/httpd ./
+        cp /var/log/mysqld.log ./
+        cp /var/log/syslog ./
+        cp /var/log/daemon.log ./
+        cp /var/log/boot.log ./
+        cp /var/log/cron ./
+        cp /var/log/secure ./
+        cp /var/log/maillog ./
+        cp /var/log/spooler ./
+        dmesg >> ./dmesg.log
+    else
+        cp /var/log/apport.log ./
+        cp /var/log/boot.log ./
+        cp /var/log/dmesg ./
+        cp /var/log/dpkg.log ./
+        cp /var/log/kern.log ./
+        cp /var/log/fsck ./
+        cp /var/log/apt/*log ./
+        cp /var/log/cpus ./
+        dmesg >> ./dmesg.log
+    fi
+    cd .. && mkdir message && cd message
+    echo -e "+++++系统信息+++++
+$(date)
+-----内核/操作系统/CPU信息-----
+$(uname -a)
+-----
+$(/etc/issue)  $(cat /etc/redhat-release)
+-----
+$(cat /proc/cpuinfo)
+
+-----计算机名-----
+$(hostname)
+
+-----内核模块-----
+$(lsmod)
+
+-----环境变量-----
+$(env)
+
+-----系统负载-----
+$(uptime)
+
+-----内存信息-----
+$(cat /proc/meminfo)
+
+-----网络接口属性-----
+$(ifconfig)
+
+-----防火墙设置-----
+$(iptables -L)
+
+-----路由表-----
+$(route -n)
+
+-----IP-----
+$(wget -qO- -t1 -T2 ipinfo.io/ip)
+
+-----所有监听端口-----
+$(netstat -lntp)
+
+-----已经建立的连接-----
+$(netstat -antp)
+
+-----网络统计-----
+$(netstat -s)
+
+-----所有进程-----
+$(ps -ef)
+
+-----服务状态-----
+$(service --status-all)
+
+-----安装的软件包-----
+$(rpm -qa)
+$(dpkg -l)
+" >> messages.txt
+cd ..
+tar -cjf ~/AR_Log.tar.bz2 /tmp/AR_Log
+rm -rf /tmp/AR_Log
+}
+
+#日志收集工具
+if [[ $1 == "log" ]];then
+    echo "日志收集将会收集到您操作系统的部分日志，以便于对错误进行定位，可能会包含您的隐私信息，您确定要收集吗？(Y/N)"
+    read -n 1 yn
+    if [[ ${yn} == [Yy] ]];then
+        rm -rf ~/AR_Log.tar.bz2
+        echo -e "\n开始收集日志，通常这将很快完成"
+        MakLog 1>/dev/null 2>&1
+        echo "收集完成，文件位于/root/AR_Log.tar.bz2"
+        exit 0
+    else
+        exit 2
+    fi
+fi
 
 #Get Current Directory
 workdir=$(pwd)
-
 #Install Basic Tools
 if [ ! -e /usr/local/bin/ssr ];then
 if [[ $1 == "uninstall" ]];then
@@ -307,7 +416,7 @@ fi
 fi
 #Install SSR-Bash Background
 if [[ $1 == "develop" ]];then
-	wget -q -N --no-check-certificate -O /usr/local/bin/ssr https://git.fdos.me/stack/AR-B-P-B/raw/master/ssr
+	wget -q -N --no-check-certificate -O /usr/local/bin/ssr https://git.fdos.me/stack/AR-B-P-B/raw/develop/ssr
 	chmod +x /usr/local/bin/ssr
 else
 	wget -q -N --no-check-certificate -O /usr/local/bin/ssr https://git.fdos.me/stack/AR-B-P-B/raw/master/ssr
@@ -318,7 +427,7 @@ fi
 nowip=$(grep -E -o "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)" /usr/local/shadowsocksr/userapiconfig.py)
 sed -i "s/sspanelv2/mudbjson/g" /usr/local/shadowsocksr/userapiconfig.py
 sed -i "s/UPDATE_TIME = 60/UPDATE_TIME = 10/g" /usr/local/shadowsocksr/userapiconfig.py
-sed -i "s/SERVER_PUB_ADDR = '${nowip}'/SERVER_PUB_ADDR = '$(wget -qO- -t1 -T2 ipinfo.io/ip)'/" /usr/local/shadowsocksr/userapiconfig.py
+sed -i "s/SERVER_PUB_ADDR = '${nowip}'/SERVER_PUB_ADDR = '$(wget -qO- -t1 -T2 ipinfo.io/ip)'/g" /usr/local/shadowsocksr/userapiconfig.py
 #INstall Success
 read -t 20 -p "输入与您主机绑定的域名(请在20秒内输入，超时将跳过本步骤.默认填入本机IP): " ipname
 if [[ -z ${ipname} ]];then
@@ -371,6 +480,9 @@ if [[ -e /etc/sysconfig/iptables-config ]];then
 fi
 bash /usr/local/SSR-Bash-Python/self-check.sh
 echo '安装完成！输入 ssr 即可使用本程序~'
+echo "若安装出现异常，或安装完成后无法使用，请手动执行bash ./install.sh log
+这将收集日志文件，并将日志文件发送给作者
+"
 if [[ ${check} != "yes" ]] ;then
         echo "如果你执行 ssr 提示找不到命令，请尝试退出并重新登录来解决"
 fi
