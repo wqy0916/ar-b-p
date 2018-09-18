@@ -41,16 +41,38 @@ else
     else
         echo "${nowdate}" > /tmp/yiyan.date
         #echo "$(curl -L -s https://sslapi.hitokoto.cn/?encode=text)" >> /tmp/yiyan.tmp
-	echo "$(curl -L -s --connect-timeout 3 https://us.fdos.me/yiyan/ || curl -L -s --connect-timeout 3 https://sslapi.hitokoto.cn/?encode=text || echo '无法连接到远程数据库!')" >> /tmp/yiyan.tmp
+	echo "$(curl -L -s --connect-timeout 3 https://cn.fdos.me/yiyan/ || curl -L -s --connect-timeout 3 https://sslapi.hitokoto.cn/?encode=text || echo '无法连接到远程数据库!')" >> /tmp/yiyan.tmp
         tail -n 1 /tmp/yiyan.tmp
     fi
 fi
 }
+#单位转换
+convert(){
+while read usage;
+do
+    if [ "${usage}" -gt 0 -a "${usage}" -lt 1024 ] ; then
+	usage="${usage}B"
+    elif [ "${usage}" -ge 1024 -a "${usage}" -lt 1048576 ] ; then
+	usage="$(echo "scale=2; ${usage} / 1024" | bc)KB"
+    elif [ "${usage}" -ge 1048576 -a "${usage}" -lt 1073741824 ] ; then
+	usage="$(echo "scale=2; ${usage} / 1048576" | bc)MB"
+    elif [ "${usage}" -ge 1073741824 -a "${usage}" -lt 1099511627776 ] ; then
+	usage="$(echo "scale=2; ${usage} / 1073741824" | bc)GB"
+    elif [ "${usage}" -ge 1099511627776 ] ; then
+	usage="$(echo "scale=2; ${usage} / 1099511627776" | bc)TB"
+    fi
+    echo "${usage}"
+done
+}
+
+RX="$(cat /proc/net/dev | grep eth0 | awk '{ print $2 }' | convert )"
+TX="$(cat /proc/net/dev | grep eth0 | awk '{ print $10 }' | convert)"
 
 echo
 echo "*******************"
 echo ""
-echo -e "欢迎使用 AR (Python Base) Beta\n"
+echo -e "欢迎使用 AR (Python Base) Beta"
+echo -e "全局流量统计：发送:\033[40;34;1m${TX}\033[0m  接收:\033[40;34;1m${RX}\033[0m\n"
 echo -e "每日一言：\033[32m$(yiyan)\033[0m\n"
 echo "输入数字选择功能："
 echo ""
