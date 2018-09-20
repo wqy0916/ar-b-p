@@ -41,7 +41,12 @@ rand(){
 }
 
 source /usr/local/SSR-Bash-Python/easyadd.conf
-
+if [[ -z ${unum} ]];then
+    uparm=1000
+    unum="不限"
+else
+    uparm="${unum}"
+fi
 echo "你选择了添加用户"
 echo ""
 read -p "输入用户名： " uname
@@ -98,9 +103,9 @@ fi
 echo "用户添加成功！用户信息如下："
 cd /usr/local/shadowsocksr
 if [[ $iflimitspeed == y ]]; then
-	python mujson_mgr.py -a -u $uname -p $uport -k $upass -m $um1 -O $ux1 -o $uo1 -t $ut -S $us
+	python mujson_mgr.py -a -u $uname -p $uport -k $upass -m $um1 -O $ux1 -o $uo1 -t $ut -S $us -G $uparm
 else
-	python mujson_mgr.py -a -u $uname -p $uport -k $upass -m $um1 -O $ux1 -o $uo1 -t $ut
+	python mujson_mgr.py -a -u $uname -p $uport -k $upass -m $um1 -O $ux1 -o $uo1 -t $ut -G $uparm
 fi
 
 SSRPID=$(ps -ef | grep 'server.py m' | grep -v grep | awk '{print $2}')
@@ -124,6 +129,6 @@ echo "加密方法: $um1"
 echo "协议: $ux1"
 echo "混淆方式: $uo1"
 echo "流量: $ut GB"
-echo "允许连接数: 不限"
+echo "允许连接数: $unum"
 echo "帐号有效期: $datelimit"
 echo "===================="
