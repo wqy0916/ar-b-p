@@ -65,8 +65,8 @@ do
 done
 }
 
-RX="$(cat /proc/net/dev | grep eth0 | awk '{ print $2 }' | convert )"
-TX="$(cat /proc/net/dev | grep eth0 | awk '{ print $10 }' | convert)"
+RX="$(cat /proc/net/dev | sed -n '/lo:/d;/:/p' | awk '{ print $2 }' | convert )"
+TX="$(cat /proc/net/dev | sed -n '/lo:/d;/:/p' | awk '{ print $10 }' | convert)"
 
 echo
 echo "*******************"
