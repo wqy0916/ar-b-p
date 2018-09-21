@@ -46,6 +46,18 @@ else
     fi
 fi
 }
+
+addition(){
+while read line;
+do
+    new=$(echo "${line}+${new}" | bc 2>/dev/null)
+    if [[ -z ${new} ]];then
+         new=${line}
+    fi
+done
+echo "${new}"
+}
+
 #单位转换
 convert(){
 while read usage;
@@ -65,8 +77,8 @@ do
 done
 }
 
-RX="$(cat /proc/net/dev | sed -n '/lo:/d;/:/p' | awk '{ print $2 }' | convert )"
-TX="$(cat /proc/net/dev | sed -n '/lo:/d;/:/p' | awk '{ print $10 }' | convert)"
+RX="$(cat /proc/net/dev | sed -n '/lo:/d;/:/p' | awk '{ print $2 }' | addition | convert )"
+TX="$(cat /proc/net/dev | sed -n '/lo:/d;/:/p' | awk '{ print $10 }' | addition | convert)"
 
 echo
 echo "*******************"
