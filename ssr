@@ -107,7 +107,7 @@ while :; do echo
 done
 
 if [[ $choice == 0 ]];then
-	exit 0
+	kill $BASHPID
 fi
 
 if [[ $choice == 1 ]];then
@@ -131,7 +131,7 @@ if [[ $choice == 5 ]];then
 fi
 
 if [[ $choice == 6 ]];then
-	bash /usr/local/SSR-Bash-Python/user/easyadd.sh
+	bash /usr/local/SSR-Bash-Python/user/easyadd.sh || exit 0
 	ssr
 	exit 0
 fi

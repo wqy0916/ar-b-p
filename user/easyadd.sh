@@ -52,7 +52,7 @@ echo ""
 read -p "输入用户名： " uname
 if [[ $uname == "" ]];then
 	bash /usr/local/SSR-Bash-Python/user.sh 
-	exit 0
+	exit 1
 fi
 while :;do
 	uport=$(rand 1000 65535)
