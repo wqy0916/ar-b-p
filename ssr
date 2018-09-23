@@ -133,6 +133,7 @@ fi
 if [[ $choice == 6 ]];then
 	bash /usr/local/SSR-Bash-Python/user/easyadd.sh
 	ssr
+	exit 0
 fi
 
 if [[ $choice == 7 ]];then
