@@ -86,13 +86,9 @@ while :; do echo
 done
 
 if [[ $devc == 1 ]];then
-	rm -rf /usr/local/bin/ssr
+	echo "本功能已迁移到 程序管理 ,即将为您跳转!"
 	cd /usr/local/SSR-Bash-Python/
-	git pull
-	wget -N --no-check-certificate -O /usr/local/bin/ssr https://raw.githubusercontent.com/readour/AR-B-P-B/develop/ssr
-	chmod +x /usr/local/bin/ssr
-	echo 'SSR-Bash升级成功！'
-	ssr
+	bash ./self.sh
 fi
 
 if [[ $devc == 2 ]];then
