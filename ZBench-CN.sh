@@ -8,6 +8,29 @@ if  [ ! -e '/usr/bin/wget' ]; then
 fi
 read -p "请输入你的服务器提供商: " Provider
 
+
+# Get IP
+OwnerIP=$(who am i | awk '{print $NF}' | sed -e 's/[()]//g')
+while :; do echo
+  read -p "请确认你所在地的IP:${OwnerIP} [y/n]: " ifOwnerIP
+  if [[ ! ${ifOwnerIP} =~ ^[y,n]$ ]]; then
+    echo "输入错误! 请确保你输入的是 'y' 或者 'n'"
+  else
+    break
+  fi
+done
+if [[ ${ifOwnerIP} == "n" ]]; then
+  while :; do echo
+    read -p "请输入你所在地的IP: " OwnerIP
+    if [[ ! ${OwnerIP} ]]; then
+      echo "输入错误!IP地址不能为空！"
+    else
+      break
+    fi
+  done
+fi
+
+
 # Check release
 if [ -f /etc/redhat-release ]; then
     release="centos"
@@ -35,32 +58,19 @@ PLAIN='\033[0m'
 
 rm -rf /tmp/report && mkdir /tmp/report
 
-# Install locales
+echo "正在安装必要的依赖，请耐心等待..."
 
-if [ "${release}" != "centos" ]; then
-    apt-get update > /dev/null 2>&1
-    apt-get -y install locales > /dev/null 2>&1
-fi      
+
 
 # Install Virt-what
 if  [ ! -e '/usr/sbin/virt-what' ]; then
     echo "Installing Virt-What......"
     if [ "${release}" == "centos" ]; then
-        yum update > /dev/null 2>&1
         yum -y install virt-what > /dev/null 2>&1
     else
+        apt-get update
         apt-get -y install virt-what > /dev/null 2>&1
-    fi      
-fi
-
-echo "正在安装必要的依赖，请耐心等待..."
-
-# Install ca-certificates
-echo "Installing ca-certificates......"
-if [ "${release}" == "centos" ]; then
-    yum -y install ca-certificates > /dev/null 2>&1
-else
-    apt-get -y install ca-certificates > /dev/null 2>&1
+    fi
 fi
 
 # Install uuid
@@ -136,6 +146,9 @@ chmod a+rx /tmp/ZPing-CN.py
 /tmp/besttrace 211.136.192.6 > /tmp/gdm.txt 2>&1 &
 #"TraceRoute to Guangdong Unicom"
 /tmp/besttrace 221.5.88.88 > /tmp/gdu.txt 2>&1 &
+#"TraceRoute to Owner's Network"
+/tmp/besttrace ${OwnerIP} > /tmp/own.txt 2>&1 &
+
 
 
 
@@ -179,7 +192,7 @@ speed() {
 speed_test_cn(){
     if [[ $1 == '' ]]; then
         temp=$(python /tmp/speedtest.py --share 2>&1)
-        is_down=$(echo "$temp" | grep 'Download') 
+        is_down=$(echo "$temp" | grep 'Download')
         if [[ ${is_down} ]]; then
             local REDownload=$(echo "$temp" | awk -F ':' '/Download/{print $2}')
             local reupload=$(echo "$temp" | awk -F ':' '/Upload/{print $2}')
@@ -192,7 +205,7 @@ speed_test_cn(){
         fi
     else
         temp=$(python /tmp/speedtest.py --server $1 --share 2>&1)
-        is_down=$(echo "$temp" | grep 'Download') 
+        is_down=$(echo "$temp" | grep 'Download')
         if [[ ${is_down} ]]; then
             local REDownload=$(echo "$temp" | awk -F ':' '/Download/{print $2}')
             local reupload=$(echo "$temp" | awk -F ':' '/Upload/{print $2}')
@@ -223,10 +236,10 @@ speed_cn() {
     speed_test_cn '4863' "西安电信"
     speed_test_cn '5083' '上海联通'
     speed_test_cn '5726' '重庆联通'
-    speed_test_cn '5192' "西安移动"
-    speed_test_cn '4665' '上海移动'
-    speed_test_cn '4575' '成都移动'
-     
+    speed_test_cn '4751' "北京电信"
+    speed_test_cn '5145' '北京联通'
+    speed_test_cn '6132' '湖南电信'
+
     rm -rf /tmp/speedtest.py
 }
 
@@ -377,6 +390,8 @@ NetPiSM=$( sed -n "24p" /tmp/speed_cn.txt )
 NetUPCM=$( sed -n "25p" /tmp/speed_cn.txt )
 NetDWCM=$( sed -n "26p" /tmp/speed_cn.txt )
 NetPiCM=$( sed -n "27p" /tmp/speed_cn.txt )
+
+
 wget -N --no-check-certificate https://raw.githubusercontent.com/FunctionClub/ZBench/master/Generate.py >> /dev/null 2>&1
 python Generate.py && rm -rf Generate.py && cp /root/report.html /tmp/report/index.html
 TSM=$( cat /tmp/shm.txt_table )
@@ -403,7 +418,7 @@ done
 if [[ $ifreport == 'y' ]];then
     echo ""
     myip=`curl -m 10 -s http://members.3322.org/dyndns/getip`
-    echo "访问 http://${myip}:8001/index.html 查看您的测试报告，按 Ctrl + C 退出" 
+    echo "访问 http://${myip}:8001/index.html 查看您的测试报告，按 Ctrl + C 退出"
 	cd /tmp/report
     python -m SimpleHTTPServer 8001
     iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 8001 -j ACCEPT
