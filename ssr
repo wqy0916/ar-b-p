@@ -107,7 +107,7 @@ while :; do echo
 done
 
 if [[ $choice == 0 ]];then
-	kill $BASHPID
+	kill $BASHPID 2&>1 1>/dev/null
 fi
 
 if [[ $choice == 1 ]];then
