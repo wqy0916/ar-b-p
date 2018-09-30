@@ -78,7 +78,7 @@ if [[ $lsid == 2 ]];then
 		python mujson_mgr.py -l -p $uid
 	fi
 fi
-
+Edit_User(){
 echo -e "\n1.修改密码"
 echo "2.修改加密"
 echo "3.修改协议"
@@ -532,4 +532,12 @@ if [[ $ec == 12 ]];then
 	pqr
 	echo -e "端口号修改成功！\n"
 fi
-exit 0
+}
+Edit_User
+echo "是否继续修改（y/N）"
+read cuser
+if [[ ${cuser} == [Yy] ]];then
+	Edit_User
+else
+	exit 0
+fi
