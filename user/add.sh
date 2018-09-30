@@ -38,6 +38,22 @@ banport="80
 8080
 443"
 
+source /usr/local/SSR-Bash-Python/easyadd.conf
+Tcp_On(){
+	if [[ ${TCP} == on ]];then
+		iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j ACCEPT
+	else
+		iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j DROP
+	fi
+}
+Udp_On(){
+	if [[ ${UDP} == on ]];then
+		iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j ACCEPT
+	else
+		iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j DROP
+	fi
+}
+
 echo "你选择了添加用户"
 echo ""
 read -p "输入用户名： " uname
@@ -315,20 +331,20 @@ fi
 if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]];then
 	iptables-restore < /etc/iptables.up.rules
 	clear
-	iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j ACCEPT
-	iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j ACCEPT
+	Tcp_On
+	Udp_On
 	iptables-save > /etc/iptables.up.rules
 fi
 
 if [[ ${OS} == CentOS ]];then
 	if [[ $CentOS_RHEL_version == 7 ]];then
 		iptables-restore < /etc/iptables.up.rules
-		iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j ACCEPT
-    	iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j ACCEPT
+		Tcp_On
+    	Udp_On
 		iptables-save > /etc/iptables.up.rules
 	else
-		iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j ACCEPT
-    	iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j ACCEPT
+		Tcp_On
+    	Udp_On
 		/etc/init.d/iptables save
 		/etc/init.d/iptables restart
 	fi

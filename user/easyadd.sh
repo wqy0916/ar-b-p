@@ -33,6 +33,22 @@ fi
 #Check Root
 [ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
 
+source /usr/local/SSR-Bash-Python/easyadd.conf
+
+Tcp_On(){
+	if [[ ${TCP} == on ]];then
+		iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j ACCEPT
+	else
+		iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j DROP
+	fi
+}
+Udp_On(){
+	if [[ ${UDP} == on ]];then
+		iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j ACCEPT
+	else
+		iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j DROP
+	fi
+}
 rand(){  
     min=$1  
     max=$(($2-$min+1))  
@@ -40,7 +56,6 @@ rand(){
     echo $(($num%$max+$min))  
 }
 
-source /usr/local/SSR-Bash-Python/easyadd.conf
 if [[ -z ${unum} ]];then
     uparm=1000
     unum="不限"
@@ -81,20 +96,20 @@ fi
 if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]];then
 	iptables-restore < /etc/iptables.up.rules
 	clear
-	iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j ACCEPT
-	iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j ACCEPT
+	Tcp_On
+	Udp_On
 	iptables-save > /etc/iptables.up.rules
 fi
 
 if [[ ${OS} == CentOS ]];then
 	if [[ $CentOS_RHEL_version == 7 ]];then
 		iptables-restore < /etc/iptables.up.rules
-		iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j ACCEPT
-    	iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j ACCEPT
+		Tcp_On
+		Udp_On
 		iptables-save > /etc/iptables.up.rules
 	else
-		iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport $uport -j ACCEPT
-    	iptables -I INPUT -m state --state NEW -m udp -p udp --dport $uport -j ACCEPT
+		Tcp_On
+		Udp_On
 		/etc/init.d/iptables save
 		/etc/init.d/iptables restart
 	fi

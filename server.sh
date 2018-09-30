@@ -30,6 +30,7 @@ else
 echo "Does not support this OS, Please contact the author! "
 kill -9 $$
 fi
+source /usr/local/SSR-Bash-Python/easyadd.conf
 servercheck(){
 	echo "你要做什么？"
 	echo ""
@@ -105,6 +106,46 @@ servercheck(){
 		fi
 	fi
 }
+TCP_UDP(){
+	if [[ -z ${TCP} ]]&&[[ -z ${UDP} ]];then
+		echo -e "TCP=on\nUDP=on" >> /usr/local/SSR-Bash-Python/easyadd.conf
+	fi
+	if [[ $TCP == on ]]&&[[ $UDP == on ]];then
+		nowthat="TCP & UPD"
+	elif [[ $TCP == on ]];then
+		nowthat="TCP only"
+	elif [[ $UDP == on ]];then
+		nowthat="UDP only"
+	fi
+	echo ""
+	echo "当前模式: ${nowthat}"
+	echo "注意：修改网络协议模式只针对从修改成功后新添加的用户生效，不影响已有用户！"
+	echo "1.TCP & UPD"
+	echo "2.TCP only"
+	echo "3.UDP only"
+	echo "直接回车返回上级菜单"
+	while :; do echo
+		read -p "请选择： " serverc
+		[ -z "$serverc" ] && bash /usr/local/SSR-Bash-Python/server.sh && break
+		if [[ ! $serverc =~ ^[1-3]$ ]];then
+			echo "输入错误! 请输入正确的数字!"
+		else
+			break	
+		fi
+	done
+	if [[ ${serverc} == 1 ]];then
+	    sed -i 's/^TCP=.*/TCP=on/' /usr/local/SSR-Bash-Python/easyadd.conf
+		sed -i 's/^UDP=.*/UDP=on/' /usr/local/SSR-Bash-Python/easyadd.conf
+		echo "修改成功"
+	fi
+	if [[ ${serverc} == 3 ]];then
+	    sed -i 's/^TCP=.*/TCP=off/' /usr/local/SSR-Bash-Python/easyadd.conf
+		echo "修改成功"
+	fi
+	if [[ ${serverc} == 2 ]];then
+		sed -i 's/^UDP=.*/UDP=off/' /usr/local/SSR-Bash-Python/easyadd.conf
+	fi
+}
 echo ""
 echo "1.启动服务"
 echo "2.停止服务"
@@ -117,13 +158,14 @@ echo "8.关闭用户WEB面板"
 echo "9.开/关服务端开机启动"
 echo "10.服务器自动巡检系统"
 echo "11.服务器网络与IO测速"
+echo "12.网络协议模式切换"
 echo "直接回车返回上级菜单"
 
 while :; do echo
 	read -p "请选择： " serverc
 	[ -z "$serverc" ] && ssr && break
 	if [[ ! $serverc =~ ^[1-9]$ ]]; then
-		if [[ $serverc == 10 ]]||[[ $serverc == 11 ]]; then
+		if [[ $serverc == 10 ]]||[[ $serverc == 11 ]]||[[ $serverc == 12 ]]; then
 			break
 		fi
 		echo "输入错误! 请输入正确的数字!"
@@ -284,5 +326,10 @@ fi
 
 if [[ $serverc == 11 ]];then
     bash /usr/local/SSR-Bash-Python/ZBench-CN.sh
+	bash /usr/local/SSR-Bash-Python/server.sh
+fi
+
+if [[ $serverc == 12 ]];then
+	TCP_UDP
 	bash /usr/local/SSR-Bash-Python/server.sh
 fi
