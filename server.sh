@@ -144,7 +144,9 @@ TCP_UDP(){
 	fi
 	if [[ ${serverc} == 2 ]];then
 		sed -i 's/^UDP=.*/UDP=off/' /usr/local/SSR-Bash-Python/easyadd.conf
+		echo "修改成功"
 	fi
+	sleep 2s
 }
 echo ""
 echo "1.启动服务"
