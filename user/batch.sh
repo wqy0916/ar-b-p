@@ -368,6 +368,7 @@ while :; do
         echo "允许连接数: $uparam"
         echo "帐号有效期: $datelimit"
         echo "===================="
+        sleep 3s
         break
     else
         i=$((i+1))
