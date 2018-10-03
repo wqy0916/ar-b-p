@@ -101,6 +101,9 @@ while :; do echo
 			break
 		elif [[ $ec == 12 ]]; then
 			break
+		elif [[ -z ${ec} ]]; then
+			bash /usr/local/SSR-Bash-Python/user/edit.sh 
+			exit 0
 		fi
 		echo "输入错误! 请输入正确的数字!"
 	else
