@@ -47,6 +47,15 @@ else
 fi
 }
 
+killme(){
+	for i in $(ps -ef | grep SSR-Bash-Python | awk '{print $2}')
+	do
+		kill -2 ${i}
+	done
+	kill -2 ssr 
+	exit 0
+}
+
 addition(){
 while read line;
 do
@@ -109,7 +118,7 @@ while :; do echo
 done
 
 if [[ $choice == 0 ]];then
-	bash /usr/local/SSR-Bash-Python/killme.sh 2&>/dev/null
+	killme 2&>/dev/null
 fi
 
 if [[ $choice == 1 ]];then
