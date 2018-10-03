@@ -101,7 +101,7 @@ while :;do
 done
 read -p "输入密码： " upass
 echo ""
-echo "加密方式"
+echo "加密方式(默认3)"
 echo '1.none'
 echo '2.aes-128-cfb'
 echo '3.aes-256-cfb'
@@ -114,14 +114,19 @@ echo '9.salsa20'
 while :; do echo
 	read -p "输入加密方式： " um
 	if [[ ! $um =~ ^[1-9]$ ]]; then
-		echo "输入错误! 请输入正确的数字!"
+		if [[ -z ${um} ]];then
+			um=3
+			break
+		else
+			echo "输入错误! 请输入正确的数字!"
+		fi
 	else
 		break	
 	fi
 done
 
 
-echo "协议方式"
+echo "协议方式(默认6)"
 echo '1.origin'
 echo '2.auth_sha1_v4'
 echo '3.auth_aes128_md5'
@@ -136,6 +141,9 @@ while :; do echo
 	read -p "输入协议方式： " ux
 	if [[ ! $ux =~ ^[1-9]$ ]]; then
 		if [[ $ux == 10 ]]; then
+			break
+		elif [[ -z ${ux} ]];then
+			ux=6
 			break
 		fi
 		echo "输入错误! 请输入正确的数字!"
@@ -168,7 +176,7 @@ if [[ ! $ux =~ ^[1,5]$ ]]; then
 	fi
 fi
 
-echo "混淆方式"
+echo "混淆方式(默认1)"
 echo '1.plain'
 echo '2.http_simple'
 echo '3.http_post'
@@ -176,7 +184,12 @@ echo '4.tls1.2_ticket_auth'
 while :; do echo
 	read -p "输入混淆方式： " uo
 	if [[ ! $uo =~ ^[1-4]$ ]]; then
-		echo "输入错误! 请输入正确的数字!"
+		if [[ -z ${uo} ]];then
+			uo=1
+			break
+		else
+			echo "输入错误! 请输入正确的数字!"
+		fi
 	else
 		break	
 	fi
