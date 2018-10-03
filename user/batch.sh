@@ -65,7 +65,12 @@ while :; do
     if [[ "$unum" =~ ^(-?|\+?)[0-9]+(\.?[0-9]+)?$ ]];then
         break
     else
-        echo "请输入数字！"
+		if [[ -z ${unum} ]];then
+			bash /usr/local/SSR-Bash-Python/user.sh 
+			exit 0
+		else
+        	echo "请输入数字！"
+		fi
     fi
 done
 printf "请输入用户密码，若留空将会为每个用户随机生成密码："
@@ -78,7 +83,7 @@ while :; do
     str="${str}${ret}"
     printf "*"
 done
-echo "加密方式(以下设置将针对所以用户生效)"
+echo "加密方式(以下设置将针对所有用户生效)"
 echo '1.none'
 echo '2.aes-128-cfb'
 echo '3.aes-256-cfb'
@@ -368,7 +373,7 @@ while :; do
         echo "允许连接数: $uparam"
         echo "帐号有效期: $datelimit"
         echo "===================="
-        sleep 3s
+        sleep 2s
         break
     else
         i=$((i+1))
