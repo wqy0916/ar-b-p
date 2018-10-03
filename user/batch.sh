@@ -315,7 +315,7 @@ while :; do
     fi
     uport=$(rand 1000 65535)
     if [[ -z ${str} ]];then
-        upass=$(cat /dev/urandom | tr -dc A-Za-z0-9_ | head -c8 | sed 's/[ \r\b ]//g')
+        upass=$(bash /usr/local/SSR-Bash-Python/password -T -s 8)
     else
         upass=${str}
     fi
@@ -338,7 +338,7 @@ while :; do
 	    	/etc/init.d/iptables restart
 	    fi
     fi
-    uname="batch_$(cat /dev/urandom | tr -dc A-Za-z0-9_ | head -c4 | sed 's/[ \r\b ]//g')"
+    uname="batch_$(cat /dev/urandom | tr -dc A-Za-z0-9 | head -c4 | sed 's/[ \r\b ]//g')"
     cd /usr/local/shadowsocksr
     if [[ $iflimitspeed == y ]]; then
     	if [[ ! "$uparam" == "" ]]; then
