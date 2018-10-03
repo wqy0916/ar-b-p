@@ -120,7 +120,7 @@ TCP_UDP(){
 	echo ""
 	echo "当前模式: ${nowthat}"
 	echo "注意：修改网络协议模式只针对从修改成功后新添加的用户生效，不影响已有用户！"
-	echo "1.TCP & UPD"
+	echo "1.TCP & UPD (默认)"
 	echo "2.TCP only"
 	echo "3.UDP only"
 	echo "直接回车返回上级菜单"
