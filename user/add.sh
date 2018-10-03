@@ -102,6 +102,7 @@ done
 read -p "输入密码： " upass
 if [[ -z ${upass} ]];then
 	upass=$(bash /usr/local/SSR-Bash-Python/password -T -s 8)
+fi
 echo ""
 echo "加密方式(默认3)"
 echo '1.none'
