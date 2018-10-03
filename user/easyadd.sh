@@ -77,6 +77,9 @@ while :;do
 	fi
 done
 read -p "输入密码： " upass
+if [[ -z ${upass} ]];then
+	upass=$(bash /usr/local/SSR-Bash-Python/password -T -s 8)
+fi
 while :; do echo
 	read -p "输入流量限制(只需输入数字，单位：GB)： " ut
 	if [[ "$ut" =~ ^(-?|\+?)[0-9]+(\.?[0-9]+)?$ ]];then
