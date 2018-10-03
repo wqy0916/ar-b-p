@@ -121,7 +121,7 @@ if [[ "$sv" == "$solve" ]];then
 		if [[ -e ./check.log ]];then
 			mv ./check.log /usr/local/SSR-Bash-Python/check.log
 		fi
-		if [[ -e /usr/local/SSR-Bash-Python/timelimit.db ]];then
+		if [[ -e ./timelimit.db ]];then
 			mv ./timelimit.db /usr/local/SSR-Bash-Python/timelimit.db
 		fi
 		if [[ ${OS} =~ ^Ubuntu$|^Debian$ ]];then
