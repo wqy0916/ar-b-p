@@ -128,7 +128,11 @@ EasyEdit(){
 	while :; do echo
 		read -p "请选择： " lsid
 		if [[ ! $lsid =~ ^[1-2]$ ]]; then
-			echo "输入错误! 请输入正确的数字!"
+			if [[ -z ${lsid} ]]; then
+				exit 1
+			else
+				echo "输入错误! 请输入正确的数字!"
+			fi
 		else
 			break	
 		fi
