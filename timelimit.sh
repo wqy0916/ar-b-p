@@ -224,6 +224,12 @@ case ${param[0]} in
  	c|C)
  		checkonly
  		;;
+	d|D)
+		while :;do
+			checkonly
+			sleep 1m
+		done
+		;;
  	*)
  		readme
  		;;

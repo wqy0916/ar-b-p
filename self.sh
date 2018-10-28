@@ -37,8 +37,7 @@ updateme(){
 	if [[ -e ~/version.txt ]];then
 		rm -f ~/version.txt
 	fi
-	wget -q https://git.fdos.me/stack/AR-B-P-B/raw/develop/version.txt
-	version1=`cat ~/version.txt`
+	version1=`curl -s -L https://git.fdos.me/stack/AR-B-P-B/raw/develop/version.txt`
 	version2=`cat /usr/local/SSR-Bash-Python/version.txt`
 	if [[ "$version1" == "$version2" ]];then
 		echo "你当前已是最新版"
@@ -49,7 +48,7 @@ updateme(){
 		read -n 1 yn
 		if [[ $yn == [Yy] ]];then
 			export yn=n
-			wget -q -N --no-check-certificate https://git.fdos.me/stack/AR-B-P-B/raw/master/install.sh && bash install.sh develop
+			curl -s -O https://git.fdos.me/stack/AR-B-P-B/raw/master/install.sh && bash install.sh develop
 			sleep 3s
 			clear
 			ssr || exit 0
